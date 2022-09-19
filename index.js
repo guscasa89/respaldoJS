@@ -116,6 +116,24 @@ function limpiarDiv() {
     return nuevoPrincipal;
 }
 
+function limpiarDivMensajes() {
+    let divPrincipal = document.getElementById("container-alta");
+    divPrincipal.remove();
+
+    //obtengo el contenedor del div anterior
+    let divContenedor = document.getElementById("contenedor")
+
+    //genero el nuevo div principal
+    let nuevoPrincipal = document.createElement("div");
+    nuevoPrincipal.id = "container-alta";
+    nuevoPrincipal.className = "col-3 order-1 text-white bg-success";
+
+    //lo agrego al contenedor
+    divContenedor.append(nuevoPrincipal);
+
+    return nuevoPrincipal;
+}
+
 
 //funciones
 function listarMenues() {
@@ -330,21 +348,17 @@ function darPedido(nroPedido) {
 
 function devolverPedido(nroPedido) {
 
-    /*
-    <div class="card text-white bg-danger mb-3" style="max-width: 20rem;">
-    
-    </div>
-    */
     const pedido = darPedido(nroPedido)
-    alert(pedido.imprimirPedido());
+    //alert(pedido.imprimirPedido());
+
+    let nuevoPrincipal = limpiarDivMensajes();
 
     let divConsulta = document.createElement("div")
     divConsulta.className = "card text-white bg-danger mb-3"
     divConsulta.style = "width: 20rem; margin: 10px"
     divConsulta.innerHTML = `<div class="card-header">${pedido.id}</div><div class="card-body"><h4 class="card-title">Pedido del cliente ${pedido.cliente}</h4><p class="card-text">${pedido.imprimirPedido()}</p></div>`
 
-    let divContenedor = document.getElementById("container-consulta")
-    divContenedor.append(divConsulta)
+    nuevoPrincipal.append(divConsulta)
 
 }
 
@@ -503,9 +517,12 @@ function validarFormularioAlta(event) {
     //alert(pedido.imprimirPedido());
 
     let divMenues = document.getElementById("container-alta");
+
+
     menues.forEach((menu) => {
 
         divMenues.innerHTML = `<p style="color: #f2f2f2; font-size: 20px;">Pedido creado: ${pedido.imprimirPedido()}</p>`
+
         //document.body.append(divMenues)
 
 
@@ -626,16 +643,7 @@ function validarFormularioSlcPedido(event) {
     divForm.style = "margin: 10px; border-radius: 20px;";
 
 
-    let cadena = ``;
-    if (pedidos.length > 0) {
-
-        
-        pedidos.forEach((pedido) => {
-            cadena = cadena + `<option>${pedido.id}</option>`
-        })
-
-
-    }
+    
 
     divForm.innerHTML =
         `<fieldset>
@@ -738,7 +746,6 @@ function validarFormularioSlcPedido(event) {
 
 
 
-    ///////////////////////////////////////////////////////
 
 
 }
@@ -752,8 +759,45 @@ function validarFormularioMod(event, nroPedido) {
     let inputTelefono = document.getElementById("iptDireccion");
 
 
+    /*
+    if (estaPedido(nro)) {
+            const pedidoOriginal = darPedido(nro);
+            let cadena = "Datos del pedido " + pedidoOriginal.id + " a nombre de " + pedidoOriginal.cliente;
+            alert(cadena);
+            const DIRECCION = prompt("Ingrese dirección de entrega: ");
+            const TELEFONO = prompt("Ingrese un telefono de contacto: ");
+
+
+            var id = pedidoOriginal.id;
+            var cliente = pedidoOriginal.cliente
+
+            eliminarPedido(pedidoOriginal.id);
+
+            const MENUESPEDIDOS = selectMenues();
+
+            const COSTO = darCostoTotal(MENUESPEDIDOS);
+
+            const pedidoModificado = new Pedido(id, cliente, MENUESPEDIDOS, DIRECCION, TELEFONO, COSTO);
+
+            pedidos.push(pedidoModificado);
+            alert(pedidoModificado.imprimirPedido());
+
+            let divMenues = document.getElementById("container-modif");
+            menues.forEach((menu) => {
+
+                divMenues.innerHTML = `<p style="color: #f2f2f2; font-size: 30px;">Pedido creado: ${pedidoModificado.imprimirPedido()}</p>`
+                //document.body.append(divMenues)
+
+
+            })
+    */
+
+
 
     const ID = nroPedido;
+
+    const pedidoOriginal = darPedido(nroPedido);
+    eliminarPedido(pedidoOriginal.id);
 
     const NOMBRE = inputNombre.value;
     const DIRECCION = inputDireccion.value;
@@ -763,16 +807,16 @@ function validarFormularioMod(event, nroPedido) {
 
     const COSTO = darCostoTotal(MENUESPEDIDOS);
 
-    const pedido = new Pedido(ID, NOMBRE, MENUESPEDIDOS, DIRECCION, TELEFONO, COSTO);
+    const pedidoModificado = new Pedido(ID, NOMBRE, MENUESPEDIDOS, DIRECCION, TELEFONO, COSTO);
 
-    pedidos.push(pedido)
+    pedidos.push(pedidoModificado)
 
     //alert(pedido.imprimirPedido());
 
     let divMenues = document.getElementById("container-alta");
     menues.forEach((menu) => {
 
-        divMenues.innerHTML = `<p style="color: #f2f2f2; font-size: 20px;">Pedido Modificado: ${pedido.imprimirPedido()}</p>`
+        divMenues.innerHTML = `<p style="color: #f2f2f2; font-size: 20px;">Pedido Modificado: ${pedidoModificado.imprimirPedido()}</p>`
         //document.body.append(divMenues)
 
 
@@ -781,6 +825,44 @@ function validarFormularioMod(event, nroPedido) {
 }
 
 function bajaPedido() {
+
+    
+    let divNuevoPrincipal = limpiarDiv()
+
+    let divForm = document.createElement("form");
+
+    divForm.id = "formulario";
+
+    divForm.style = "margin: 10px; border-radius: 20px;";
+
+
+    let cadena = ``;
+    if (pedidos.length > 0) {
+
+        
+        pedidos.forEach((pedido) => {
+            cadena = cadena + `<option>${pedido.id}</option>`
+        })
+
+
+    }
+
+
+    divForm.innerHTML =
+    `<fieldset><div class="form-group"><label for="selectorPedidosMod" class="form-label mt-4">Seleccione pedido a cancelar</label>
+    <select multiple="" class="form-select" id="selectorPedidosMod">`+cadena+`</select></div>
+    <button type="submit" class="btn btn-primary">Dar de baja</button>
+    </fieldset>`
+    
+    divNuevoPrincipal.append(divForm);
+
+    formulario = document.getElementById("formulario");
+
+    formulario.onsubmit = (event) => validarFormularioBaja(event);
+    
+
+
+    /*
 
     if (pedidos.length > 0) {
         const nrosPedidos = [];
@@ -806,35 +888,94 @@ function bajaPedido() {
     } else {
         alert("No hay pedidos cargados.")
     }
+    */
 
+
+}
+
+
+function validarFormularioBaja(event) {
+    event.preventDefault();
+
+
+
+    let slcPedido = document.getElementById("selectorPedidosMod");
+    let nroPedido = parseInt(slcPedido.options[slcPedido.selectedIndex].value);
+
+    eliminarPedido(nroPedido);
+
+    //let divNuevoPrincipal = limpiarDiv()
+
+    limpiarDiv()
+
+    alert(`Se dio de baja el pedido ${nroPedido}. \nNo puedo mostrar alert de boostrap!`)
+
+    let divAlert = document.createElement("div")
+    divAlert.className = "alert alert-dismissible alert-danger"
+    divAlert.innerHTML = `<button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    El pedido ${nroPedido}<strong>ha sido cancelado</strong>`;
+
+    
+    document.body.append(divAlert);
+
+
+    
 
 
 }
 
 function consultarPedido() {
 
+    let divNuevoPrincipal = limpiarDiv()
+
+    let divForm = document.createElement("form");
+
+    divForm.id = "formulario";
+
+    divForm.style = "margin: 10px; border-radius: 20px;";
+
+
+    let cadena = ``;
     if (pedidos.length > 0) {
-        const nrosPedidos = [];
+
+        
         pedidos.forEach((pedido) => {
-            nrosPedidos.push(pedido.id)
+            cadena = cadena + `<option>${pedido.id}</option>`
         })
-        let cadena = nrosPedidos.join(" - ")
 
 
-        var nro = prompt("Seleccione un nro de pedido a consultar: " + cadena);
-
-        if (estaPedido(nro)) {
-            devolverPedido(nro);
-
-
-
-
-        } else {
-            alert("El numero de pedido no es correcto!.")
-        }
-    } else {
-        alert("No hay pedidos cargados.")
     }
+
+
+    divForm.innerHTML =
+    `<fieldset><div class="form-group"><label for="selectorPedidosMod" class="form-label mt-4">Seleccione pedido a modificar</label>
+    <select multiple="" class="form-select" id="selectorPedidosMod">`+cadena+`</select></div>
+    <button type="submit" class="btn btn-primary">Consultar</button>
+    </fieldset>`
+    
+    divNuevoPrincipal.append(divForm);
+
+    formulario = document.getElementById("formulario");
+
+    formulario.onsubmit = (event) => validarFormularioConsPedido(event);
+    
+
+
+
+}
+
+function validarFormularioConsPedido(event){
+
+    event.preventDefault();
+
+    //generar un nuevo formulario para modificacion....
+
+    let slcPedido = document.getElementById("selectorPedidosMod");
+    let nroPedido = parseInt(slcPedido.options[slcPedido.selectedIndex].value);
+
+
+
+    devolverPedido(nroPedido);
 
 
 
@@ -932,6 +1073,14 @@ function capturarEventos() {
 
     btnMod.onclick = () => {
         modificarPedido();
+    }
+
+    btnBaja.onclick = () => {
+        bajaPedido();
+    }
+
+    btnCons.onclick = () => {
+        consultarPedido();
     }
 }
 
